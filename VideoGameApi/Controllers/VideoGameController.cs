@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using VideoGameApi.Data;
+using VideoGameApi.Models;
 
 namespace VideoGameApi.Controllers;
 [Route("api/[controller]")]
@@ -13,7 +14,12 @@ public class VideoGameController(VideoGameDbContext context) : ControllerBase
     [HttpGet]
     public async Task<ActionResult<List<VideoGame>>> GetVideoGames()
     {
-        var videoGames = await _context.VideoGames.ToListAsync();
+        var videoGames = await _context.VideoGames
+            .Include(g => g.VideoGameDetails)
+            .Include(g => g.Developer)
+            .Include(g => g.Publisher)
+            .Include(g => g.Genres)
+            .ToListAsync();
         return Ok(videoGames);
     }
 
